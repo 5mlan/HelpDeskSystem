@@ -1,123 +1,221 @@
 # IT Help Desk System
 
-[![.NET CI](https://github.com/5mlan/it-help-desk-system/actions/workflows/dotnet.yml/badge.svg)](https://github.com/5mlan/it-help-desk-system/actions/workflows/dotnet.yml)
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Language](https://img.shields.io/badge/UI-Arabic%20RTL-0d9b91)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-MVC-512BD4)](https://learn.microsoft.com/aspnet/core/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite)](https://www.sqlite.org/)
 
-A complete, portfolio-ready IT support ticket system built for Visual Studio with ASP.NET Core MVC, ASP.NET Identity, Entity Framework Core, and SQLite.
+A web-based IT support ticket management system built with **ASP.NET Core MVC**, **Entity Framework Core**, **Identity**, and **SQLite**.
 
-The interface is responsive and Arabic-first (RTL). The repository includes authentication, role-based authorization, ticket workflows, comments, dashboard statistics, seed data, and a GitHub-ready structure.
+The system allows users to report technical issues, technicians to manage and resolve tickets, and administrators to monitor the system and manage users.
 
 ## Features
 
-- Register, sign in, and sign out securely with ASP.NET Identity.
-- Three roles: `User`, `Technician`, and `Admin`.
-- Create support tickets with category and priority.
-- Search and filter tickets by status and priority.
-- Assign tickets to support staff and update their status.
-- Add a chronological conversation to every ticket.
-- Track every ticket event in an audit timeline.
-- Calculate an SLA target and highlight overdue tickets.
-- Export filtered tickets to Arabic-compatible CSV.
-- Close completed tickets.
-- Role-aware dashboard statistics and recent activity.
-- Admin page for managing user roles.
-- Automatic SQLite database creation and demo data.
-- Responsive Arabic UI for desktop and mobile.
-- GitHub Actions, Dependabot, Docker, and contribution templates.
+- Secure registration and login.
+- User, Technician, and Administrator roles.
+- Create and manage support tickets.
+- Assign tickets to technicians.
+- Ticket priority and status tracking.
+- Automatic SLA deadlines based on priority.
+- Overdue ticket indicators.
+- Comments inside tickets.
+- Complete ticket activity history.
+- Search and filter tickets.
+- Dashboard with ticket statistics.
+- User and role management.
+- Export tickets to CSV.
+- Responsive Arabic interface.
+- Automatic SQLite database creation.
+- Docker support.
+- GitHub Actions build checks.
 
-## Arabic documentation
+## User Roles
 
-The complete Arabic explanation of the architecture, database, source code, roles, security, modifications, common errors, and GitHub publishing steps is available in [`docs/PROJECT_GUIDE_AR.md`](docs/PROJECT_GUIDE_AR.md).
+| Role | Permissions |
+|------|-------------|
+| User | Create tickets, view personal tickets, add comments, and close resolved tickets |
+| Technician | View tickets, assign tickets, update status and priority, and export reports |
+| Administrator | Full ticket access, dashboard, user management, roles, and reports |
 
-## Technology stack
+## Technologies
 
-- .NET 8 / ASP.NET Core MVC
-- Entity Framework Core 8
+- .NET 8
+- ASP.NET Core MVC
+- Entity Framework Core
 - ASP.NET Core Identity
 - SQLite
-- Razor Views, HTML, CSS, and JavaScript
-- GitHub Actions and Docker
+- Razor Views
+- Bootstrap
+- HTML, CSS, and JavaScript
+- Docker
+- GitHub Actions
 
-## Run in Visual Studio
-
-1. Install **Visual Studio 2022** with the **ASP.NET and web development** workload and the **.NET 8 SDK**.
-2. Open `HelpDeskSystem.sln`.
-3. Wait for Visual Studio to restore the NuGet packages.
-4. Make `HelpDesk.Web` the startup project if it is not selected automatically.
-5. Press `F5` or click the green HTTPS run button.
-
-The first launch automatically creates `helpdesk.db`, the Identity tables, roles, demo accounts, and sample tickets. No MySQL installation is required.
-
-## Run with Docker
-
-```bash
-docker compose up --build
-```
-
-Open `http://localhost:8080`.
-
-## Demo accounts
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | `admin@helpdesk.local` | `Admin123!` |
-| Technician | `tech@helpdesk.local` | `Tech123!` |
-| User | `user@helpdesk.local` | `User123!` |
-
-> Change or remove the seeded passwords before deploying the application publicly.
-
-## Ticket workflow
-
-```mermaid
-flowchart LR
-    A[Open] --> B[In Progress]
-    B --> C[Resolved]
-    C --> D[Closed]
-    A --> D
-```
-
-## Project structure
+## Project Structure
 
 ```text
 HelpDeskSystem/
-├── .github/
-├── docs/
-├── HelpDeskSystem.sln
-├── src/HelpDesk.Web/
-│   ├── Controllers/
-│   ├── Data/
-│   ├── Models/
-│   ├── ViewModels/
-│   ├── Views/
-│   └── wwwroot/
-├── database/schema.sql
-├── Dockerfile
-├── docker-compose.yml
-├── screenshots/
-├── README.md
-└── LICENSE
+├── Controllers/       # Application actions and request handling
+├── Data/              # Database context and seed data
+├── Models/            # Database entities
+├── ViewModels/        # Interface-specific models
+├── Views/             # Razor pages
+├── Services/          # Business logic
+├── wwwroot/           # CSS, JavaScript, and static files
+├── docs/              # Project documentation
+├── .github/           # GitHub workflows and templates
+├── Program.cs         # Application startup and configuration
+├── appsettings.json   # Application and database settings
+└── Dockerfile         # Docker configuration
 ```
 
-## شرح التشغيل بالعربي
+## How the System Works
 
-افتح ملف `HelpDeskSystem.sln` في Visual Studio 2022، وانتظر تنزيل الحزم، ثم اضغط `F5`. قاعدة البيانات والحسابات التجريبية تُنشأ تلقائيًا عند أول تشغيل، لذلك لا تحتاج إلى تثبيت MySQL أو تنفيذ ملف SQL يدويًا.
+1. The application starts from `Program.cs`.
+2. ASP.NET Core Identity handles authentication and user roles.
+3. Entity Framework Core connects the application to SQLite.
+4. The database and default administrator account are created automatically.
+5. A user can register and create a support ticket.
+6. The system calculates the SLA deadline according to ticket priority.
+7. A technician assigns the ticket and updates its status.
+8. Every important change is saved in the ticket activity history.
+9. Administrators can manage users, view statistics, and export reports.
 
-لشرح البرنامج والكود كاملًا: [`docs/PROJECT_GUIDE_AR.md`](docs/PROJECT_GUIDE_AR.md).
+## Requirements
 
-## Security notes
+- Visual Studio 2022.
+- ASP.NET and web development workload.
+- .NET 8 SDK.
+- Git, if you want to clone the repository.
 
-- Controller actions use authorization rules and ownership checks.
-- Every state-changing form includes anti-forgery validation.
-- Passwords are hashed by ASP.NET Identity and are never stored as plain text.
-- Local return URLs are validated before redirecting after sign-in.
-- Admin users cannot accidentally remove their own admin role.
+A separate database server is not required because the project uses SQLite.
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/5mlan/it-help-desk-system.git
+cd it-help-desk-system
+```
+
+### Run with Visual Studio
+
+1. Open `HelpDeskSystem.sln` in Visual Studio 2022.
+2. Wait for NuGet packages to restore.
+3. Select `HelpDeskSystem` as the startup project.
+4. Press `F5` or click **Run**.
+5. The SQLite database will be created automatically.
+
+### Run from the Command Line
+
+```bash
+dotnet restore
+dotnet run --project HelpDeskSystem/HelpDeskSystem.csproj
+```
+
+## Demo Administrator Account
+
+```text
+Email: admin@helpdesk.local
+Password: Admin123!
+```
+
+> Change or remove the demo administrator credentials before publishing the application online.
+
+## Ticket Workflow
+
+```text
+Open → Assigned → In Progress → Resolved → Closed
+```
+
+A ticket can contain:
+
+- Title and description.
+- Category.
+- Priority.
+- Current status.
+- Ticket creator.
+- Assigned technician.
+- SLA deadline.
+- Comments.
+- Activity history.
+
+## Database
+
+The main database entities are:
+
+- **Users:** User accounts and roles.
+- **Tickets:** Technical support requests.
+- **Ticket Comments:** Communication between users and technicians.
+- **Ticket Activities:** History of changes made to each ticket.
+
+Entity Framework Core manages all database relationships and stores the information in SQLite.
+
+## CSV Export
+
+Technicians and administrators can export ticket data to a UTF-8 CSV file.
+
+The exported file supports Arabic text and can be opened using Microsoft Excel or other spreadsheet applications.
+
+## Docker
+
+Build the Docker image:
+
+```bash
+docker build -t help-desk-system .
+```
+
+Run the application:
+
+```bash
+docker run --name help-desk-system -p 8080:8080 help-desk-system
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+## Future Improvements
+
+- Email notifications.
+- File and screenshot attachments.
+- Password reset by email.
+- PDF reports.
+- Advanced dashboard analytics.
+- REST API.
+- Mobile application.
+- Cloud deployment.
+- Unit and integration tests.
+
+## Security Notes
+
+- Do not upload passwords or private keys to GitHub.
+- Store production secrets in environment variables.
+- Change the default administrator password.
+- Use HTTPS when deploying the application.
+- Update NuGet packages regularly.
 
 ## Contributing
 
-Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Security reports should follow [`SECURITY.md`](SECURITY.md).
+Contributions and suggestions are welcome.
 
-## License
+You can open an issue or submit a pull request with a clear description of the proposed change.
 
-MIT
+## Author
+
+**Salem Al-Mokhles**  
+Computer Information Systems Graduate
+
+- GitHub: [@5mlan](https://github.com/5mlan)
+- LinkedIn: [Salem Al-Mokhles](https://www.linkedin.com/in/%D8%B3%D8%A7%D9%84%D9%85-%D8%A7%D9%84-%D9%85%D8%AE%D9%84%D8%B5-768329395)
+
+## نبذة بالعربية
+
+نظام إلكتروني متكامل لإدارة بلاغات الدعم الفني. يتيح للمستخدم إنشاء التذاكر ومتابعتها، وللفني استلامها وتحديث حالتها والتواصل مع صاحب البلاغ، بينما يستطيع المدير متابعة الإحصائيات وإدارة المستخدمين والصلاحيات وتصدير التقارير.
+
+تم تطوير المشروع باستخدام **ASP.NET Core MVC وSQLite**، ويمكن تشغيله مباشرة باستخدام Visual Studio 2022 دون الحاجة إلى تثبيت خادم قاعدة بيانات منفصل.
+
+---
+
+If you find this project useful, consider giving it a ⭐.
