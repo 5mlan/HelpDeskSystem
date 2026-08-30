@@ -1,0 +1,23 @@
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## .NET build output
+**/bin/
+**/obj/
+
+## Local database and logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+data/
+
+## Local environment overrides
+.env
+appsettings.Local.json
+
+## OS files
+.DS_Store
+Thumbs.db

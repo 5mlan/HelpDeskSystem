@@ -1,0 +1,32 @@
+@model IReadOnlyList<UserRoleViewModel>
+@{
+    ViewData["Title"] = "المستخدمون";
+}
+
+<div class="page-heading"><div><span class="eyebrow">إدارة النظام</span><h1>المستخدمون والصلاحيات</h1><p>تغيير دور كل مستخدم بين مستخدم وفني ومدير.</p></div></div>
+
+<section class="card table-card">
+    <div class="section-heading"><div><h2>حسابات النظام</h2><p>@Model.Count مستخدم</p></div></div>
+    <div class="table-responsive">
+        <table>
+            <thead><tr><th>المستخدم</th><th>البريد الإلكتروني</th><th>تاريخ التسجيل</th><th colspan="2">الصلاحية</th></tr></thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td><div class="user-cell"><span class="avatar">@user.FullName.Substring(0, 1)</span><strong>@user.FullName</strong></div></td>
+                    <td class="muted">@user.Email</td>
+                    <td class="muted">@TicketDisplay.LocalDate(user.CreatedAt)</td>
+                    <td colspan="2">
+                        <form asp-action="ChangeRole" method="post" class="inline-role-form">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="role" class="form-control compact-select"><option value="User" selected="@(user.Role == "User")">مستخدم</option><option value="Technician" selected="@(user.Role == "Technician")">فني دعم</option><option value="Admin" selected="@(user.Role == "Admin")">مدير</option></select>
+                            <button class="btn btn-secondary btn-sm" type="submit">حفظ</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

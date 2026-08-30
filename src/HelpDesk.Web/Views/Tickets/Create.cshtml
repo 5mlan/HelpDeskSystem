@@ -1,0 +1,45 @@
+@model TicketFormViewModel
+@{
+    ViewData["Title"] = "تذكرة جديدة";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">طلب دعم جديد</span><h1>إنشاء تذكرة</h1><p>اشرح المشكلة بوضوح ليسهل على فريق الدعم مساعدتك.</p></div>
+    <a class="btn btn-ghost" asp-action="Index">العودة للتذاكر</a>
+</div>
+
+<form asp-action="Create" method="post" class="form-layout">
+    <section class="card form-card">
+        <div class="section-heading"><div><h2>تفاصيل المشكلة</h2><p>الحقول المعلّمة مطلوبة</p></div></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" class="form-control" placeholder="مثال: تعذر الاتصال بشبكة المكتب" />
+            <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control" rows="8" placeholder="متى بدأت المشكلة؟ ماذا يظهر لك؟ وما الخطوات التي جرّبتها؟"></textarea>
+            <span asp-validation-for="Description" class="field-error"></span>
+        </div>
+        <div class="form-grid two">
+            <div class="form-group">
+                <label asp-for="Category"></label>
+                <select asp-for="Category" class="form-control">
+                    @foreach (var item in Enum.GetValues<TicketCategory>()) {<option value="@item">@TicketDisplay.CategoryText(item)</option>}
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Priority"></label>
+                <select asp-for="Priority" class="form-control">
+                    @foreach (var item in Enum.GetValues<TicketPriority>()) {<option value="@item">@TicketDisplay.PriorityText(item)</option>}
+                </select>
+            </div>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">إرسال التذكرة</button><a class="btn btn-ghost" asp-action="Index">إلغاء</a></div>
+    </section>
+    <aside class="card tips-card">
+        <div class="tips-icon">i</div><h3>كيف تحصل على دعم أسرع؟</h3>
+        <ul><li>اكتب رسالة الخطأ كما ظهرت.</li><li>حدد الجهاز أو البرنامج المتأثر.</li><li>اذكر الخطوات التي سبقت المشكلة.</li><li>اختر «حرجة» فقط عند توقف العمل بالكامل.</li></ul>
+    </aside>
+</form>

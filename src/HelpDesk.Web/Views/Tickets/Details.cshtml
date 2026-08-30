@@ -1,0 +1,98 @@
+@model Ticket
+@{
+    ViewData["Title"] = $"التذكرة #{Model.Id}";
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Technician");
+}
+
+<div class="page-heading ticket-heading">
+    <div>
+        <div class="heading-badges"><span class="ticket-number">#@Model.Id</span><span class="badge @TicketDisplay.StatusClass(Model.Status)">@TicketDisplay.StatusText(Model.Status)</span><span class="badge @TicketDisplay.PriorityClass(Model.Priority)">@TicketDisplay.PriorityText(Model.Priority)</span></div>
+        <h1>@Model.Title</h1>
+        <p>أُنشئت بواسطة <strong>@Model.User?.FullName</strong> في @TicketDisplay.LocalDate(Model.CreatedAt)</p>
+    </div>
+    <a class="btn btn-ghost" asp-action="Index">العودة للقائمة</a>
+</div>
+
+<div class="ticket-layout">
+    <div class="ticket-main">
+        <section class="card detail-card">
+            <div class="section-heading"><div><h2>وصف المشكلة</h2><p>@TicketDisplay.CategoryText(Model.Category)</p></div></div>
+            <div class="ticket-description">@Model.Description</div>
+        </section>
+
+        <section class="card activity-card">
+            <div class="section-heading"><div><h2>سجل النشاط</h2><p>جميع التغييرات على التذكرة</p></div></div>
+            <div class="activity-timeline">
+                @foreach (var activity in Model.Activities)
+                {
+                    <article class="activity-item">
+                        <span class="activity-icon">@TicketDisplay.ActivityIcon(activity.Type)</span>
+                        <div><strong>@activity.User?.FullName</strong><p>@activity.Description</p><time>@TicketDisplay.LocalDate(activity.CreatedAt)</time></div>
+                    </article>
+                }
+            </div>
+        </section>
+
+        <section class="card comments-card">
+            <div class="section-heading"><div><h2>المحادثة</h2><p>@Model.Comments.Count تعليق</p></div></div>
+            <div class="comments-list">
+                @if (Model.Comments.Count == 0)
+                {
+                    <div class="empty-comments">لا توجد تعليقات حتى الآن.</div>
+                }
+                @foreach (var comment in Model.Comments)
+                {
+                    <article class="comment">
+                        <div class="avatar">@(comment.User?.FullName.Substring(0, 1))</div>
+                        <div class="comment-body"><div class="comment-meta"><strong>@comment.User?.FullName</strong><time>@TicketDisplay.LocalDate(comment.CreatedAt)</time></div><p>@comment.Comment</p></div>
+                    </article>
+                }
+            </div>
+            @if (Model.Status != TicketStatus.Closed)
+            {
+                <form asp-action="AddComment" asp-route-id="@Model.Id" method="post" class="comment-form">
+                    <label for="comment">أضف تعليقًا</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="4" maxlength="2000" required placeholder="اكتب تحديثًا أو معلومة إضافية..."></textarea>
+                    <button class="btn btn-primary" type="submit">إرسال التعليق</button>
+                </form>
+            }
+        </section>
+    </div>
+
+    <aside class="ticket-sidebar">
+        <section class="card action-card">
+            <h3>معلومات التذكرة</h3>
+            <dl class="ticket-meta">
+                <div><dt>التصنيف</dt><dd>@TicketDisplay.CategoryText(Model.Category)</dd></div>
+                <div><dt>الأولوية</dt><dd><span class="badge @TicketDisplay.PriorityClass(Model.Priority)">@TicketDisplay.PriorityText(Model.Priority)</span></dd></div>
+                <div><dt>الحالة</dt><dd><span class="badge @TicketDisplay.StatusClass(Model.Status)">@TicketDisplay.StatusText(Model.Status)</span></dd></div>
+                <div><dt>مسندة إلى</dt><dd>@(Model.AssignedTo?.FullName ?? "لم تُسند بعد")</dd></div>
+                <div><dt>آخر تحديث</dt><dd>@TicketDisplay.LocalDate(Model.UpdatedAt)</dd></div>
+                <div><dt>المهلة المستهدفة</dt><dd class="@(TicketSla.IsOverdue(Model) ? "overdue-text" : "")">@TicketDisplay.LocalDate(Model.DueAt) @(TicketSla.IsOverdue(Model) ? "(متأخرة)" : "")</dd></div>
+            </dl>
+        </section>
+
+        @if (isStaff && Model.Status != TicketStatus.Closed)
+        {
+            <section class="card action-card">
+                <h3>إجراءات فريق الدعم</h3>
+                <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="stack-form">
+                    <label for="status">تغيير الحالة</label>
+                    <select id="status" name="status" class="form-control">
+                        @foreach (var item in Enum.GetValues<TicketStatus>()) {<option value="@item" selected="@(Model.Status == item)">@TicketDisplay.StatusText(item)</option>}
+                    </select>
+                    <button class="btn btn-secondary btn-block" type="submit">تحديث الحالة</button>
+                </form>
+                <form asp-action="AssignToMe" asp-route-id="@Model.Id" method="post"><button class="btn btn-outline btn-block" type="submit">إسناد التذكرة إليّ</button></form>
+            </section>
+        }
+
+        @if (Model.Status != TicketStatus.Closed)
+        {
+            <section class="card action-card close-card">
+                <h3>إغلاق التذكرة</h3><p>أغلق الطلب بعد التأكد من اكتمال الحل.</p>
+                <form asp-action="Close" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('هل أنت متأكد من إغلاق التذكرة؟');"><button class="btn btn-danger btn-block" type="submit">إغلاق التذكرة</button></form>
+            </section>
+        }
+    </aside>
+</div>

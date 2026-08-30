@@ -1,0 +1,47 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "إنشاء حساب";
+}
+<div class="auth-layout">
+    <section class="auth-visual">
+        <div class="auth-brand"><span class="brand-mark">HD</span><strong>HelpDesk</strong></div>
+        <div>
+            <span class="eyebrow">ابدأ خلال دقيقة</span>
+            <h1>الدعم التقني<br />صار أبسط.</h1>
+            <p>سجّل حسابك وارفع أول تذكرة مع كل التفاصيل التي يحتاجها فريق الدعم.</p>
+        </div>
+        <div class="security-note">✓ كلمات المرور محفوظة بتشفير ASP.NET Identity</div>
+    </section>
+    <section class="auth-form-wrap">
+        <form asp-action="Register" method="post" class="auth-card">
+            <span class="auth-mobile-logo">HD</span>
+            <h2>إنشاء حساب جديد</h2>
+            <p>جميع الحقول التالية مطلوبة.</p>
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" class="form-control" placeholder="الاسم الكامل" autocomplete="name" />
+                <span asp-validation-for="FullName" class="field-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="name@company.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </div>
+            <div class="form-grid two">
+                <div class="form-group">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">إنشاء الحساب</button>
+            <div class="auth-switch">لديك حساب؟ <a asp-action="Login">تسجيل الدخول</a></div>
+        </form>
+    </section>
+</div>

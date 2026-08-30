@@ -1,0 +1,83 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "لوحة المعلومات";
+    var displayName = User.Identity?.Name?.Split('@')[0] ?? "المستخدم";
+}
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">نظرة عامة</span>
+        <h1>مرحبًا، @displayName</h1>
+        <p>@(User.IsInRole("Admin") || User.IsInRole("Technician") ? "تابع طلبات الدعم وحدّثها من لوحة واحدة." : "تابع طلباتك أو أنشئ تذكرة دعم جديدة.")</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Tickets" asp-action="Create">＋ إنشاء تذكرة</a>
+</div>
+
+<section class="stats-grid">
+    <div class="stat-card stat-total">
+        <span class="stat-icon">▤</span>
+        <div><small>إجمالي التذاكر</small><strong>@Model.Total</strong></div>
+        <span class="stat-foot">كل الطلبات</span>
+    </div>
+    <div class="stat-card stat-open">
+        <span class="stat-icon">◌</span>
+        <div><small>تذاكر مفتوحة</small><strong>@Model.Open</strong></div>
+        <span class="stat-foot">بانتظار المعالجة</span>
+    </div>
+    <div class="stat-card stat-progress">
+        <span class="stat-icon">↻</span>
+        <div><small>قيد المعالجة</small><strong>@Model.InProgress</strong></div>
+        <span class="stat-foot">يعمل عليها الفريق</span>
+    </div>
+    <div class="stat-card stat-resolved">
+        <span class="stat-icon">✓</span>
+        <div><small>مكتملة</small><strong>@Model.Resolved</strong></div>
+        <span class="stat-foot">تم حلها أو إغلاقها</span>
+    </div>
+    <div class="stat-card stat-overdue">
+        <span class="stat-icon">!</span>
+        <div><small>متجاوزة للمهلة</small><strong>@Model.Overdue</strong></div>
+        <span class="stat-foot">تحتاج متابعة عاجلة</span>
+    </div>
+</section>
+
+@if (Model.Critical > 0)
+{
+    <div class="critical-banner">
+        <span>!</span>
+        <div><strong>يوجد @Model.Critical طلب حرج يحتاج الانتباه</strong><small>راجع التذاكر ذات الأولوية الحرجة.</small></div>
+        <a asp-controller="Tickets" asp-action="Index" asp-route-priority="Critical">عرض الآن ←</a>
+    </div>
+}
+
+<section class="card table-card">
+    <div class="section-heading">
+        <div><h2>أحدث التذاكر</h2><p>آخر الطلبات التي تم تحديثها</p></div>
+        <a asp-controller="Tickets" asp-action="Index">عرض الكل</a>
+    </div>
+    @if (Model.RecentTickets.Count == 0)
+    {
+        <div class="empty-state compact"><div class="empty-icon">▤</div><h3>لا توجد تذاكر بعد</h3><p>أنشئ أول تذكرة دعم للبدء.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>التذكرة</th><th>التصنيف</th><th>الأولوية</th><th>الحالة</th><th>آخر تحديث</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var ticket in Model.RecentTickets)
+                {
+                    <tr>
+                        <td><a class="ticket-title" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id"><span>#@ticket.Id</span>@ticket.Title</a></td>
+                        <td>@TicketDisplay.CategoryText(ticket.Category)</td>
+                        <td><span class="badge @TicketDisplay.PriorityClass(ticket.Priority)">@TicketDisplay.PriorityText(ticket.Priority)</span>@if (TicketSla.IsOverdue(ticket)) {<span class="overdue-label">متأخرة</span>}</td>
+                        <td><span class="badge @TicketDisplay.StatusClass(ticket.Status)">@TicketDisplay.StatusText(ticket.Status)</span></td>
+                        <td class="muted">@TicketDisplay.LocalDate(ticket.UpdatedAt)</td>
+                        <td><a class="row-action" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">عرض</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

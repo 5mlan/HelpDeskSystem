@@ -1,0 +1,67 @@
+@model IReadOnlyList<Ticket>
+@{
+    ViewData["Title"] = "التذاكر";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">إدارة الطلبات</span><h1>التذاكر</h1><p>اعرض وابحث وتابع حالة طلبات الدعم.</p></div>
+    <div class="heading-actions">
+        @if (User.IsInRole("Admin") || User.IsInRole("Technician"))
+        {
+            <a class="btn btn-ghost" asp-action="ExportCsv" asp-route-search="@ViewBag.Search" asp-route-status="@ViewBag.Status" asp-route-priority="@ViewBag.Priority">↓ تصدير CSV</a>
+        }
+        <a class="btn btn-primary" asp-action="Create">＋ تذكرة جديدة</a>
+    </div>
+</div>
+
+<section class="card filter-card">
+    <form method="get" class="filters">
+        <div class="search-box"><span>⌕</span><input name="search" value="@ViewBag.Search" placeholder="ابحث بالعنوان أو الوصف..." /></div>
+        <select name="status">
+            <option value="">كل الحالات</option>
+            @foreach (var item in Enum.GetValues<TicketStatus>())
+            {
+                <option value="@item" selected="@(ViewBag.Status is TicketStatus current && current == item)">@TicketDisplay.StatusText(item)</option>
+            }
+        </select>
+        <select name="priority">
+            <option value="">كل الأولويات</option>
+            @foreach (var item in Enum.GetValues<TicketPriority>())
+            {
+                <option value="@item" selected="@(ViewBag.Priority is TicketPriority current && current == item)">@TicketDisplay.PriorityText(item)</option>
+            }
+        </select>
+        <button class="btn btn-secondary" type="submit">تطبيق</button>
+        <a class="btn btn-ghost" asp-action="Index">مسح</a>
+    </form>
+</section>
+
+<section class="card table-card">
+    <div class="section-heading"><div><h2>قائمة التذاكر</h2><p>@Model.Count نتيجة</p></div></div>
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state"><div class="empty-icon">⌕</div><h3>لا توجد نتائج</h3><p>جرّب تغيير البحث أو أنشئ تذكرة جديدة.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>الرقم والعنوان</th>@if (User.IsInRole("Admin") || User.IsInRole("Technician")) {<th>مقدم الطلب</th>}<th>التصنيف</th><th>الأولوية</th><th>الحالة</th><th>المسند إليه</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var ticket in Model)
+                {
+                    <tr>
+                        <td><a class="ticket-title" asp-action="Details" asp-route-id="@ticket.Id"><span>#@ticket.Id</span>@ticket.Title</a><small class="table-subtext">@TicketDisplay.LocalDate(ticket.CreatedAt)</small></td>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Technician")) {<td>@ticket.User?.FullName</td>}
+                        <td>@TicketDisplay.CategoryText(ticket.Category)</td>
+                        <td><span class="badge @TicketDisplay.PriorityClass(ticket.Priority)">@TicketDisplay.PriorityText(ticket.Priority)</span>@if (TicketSla.IsOverdue(ticket)) {<span class="overdue-label">متأخرة</span>}</td>
+                        <td><span class="badge @TicketDisplay.StatusClass(ticket.Status)">@TicketDisplay.StatusText(ticket.Status)</span></td>
+                        <td>@(ticket.AssignedTo?.FullName ?? "غير مسندة")</td>
+                        <td><a class="row-action" asp-action="Details" asp-route-id="@ticket.Id">التفاصيل</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

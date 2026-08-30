@@ -1,0 +1,12 @@
+services:
+  helpdesk:
+    build: .
+    container_name: helpdesk-web
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Data Source=/app/data/helpdesk.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
