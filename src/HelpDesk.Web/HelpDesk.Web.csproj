@@ -12,6 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.30" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.30" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.19" />
   </ItemGroup>
 </Project>
